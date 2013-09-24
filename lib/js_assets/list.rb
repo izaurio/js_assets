@@ -22,7 +22,7 @@ module JsAssets
     # from 
     # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/base.rb:418
     def self.matches_filter(filters, logical_path, filename)
-      return true if filters.empty?
+      return true if filters.nil? || filters.empty?
 
       filters.any? do |filter|
         if filter.is_a?(Regexp)
