@@ -1,23 +1,27 @@
 module JsAssets
   class List
+    class << self
+      attr_accessor :exclude, :allow
+    end
     @exclude = ['application.js']
-    @allow = ['.eof']
+    @allow = ['*.html']
     def self.fetch
-      project_assets ={}
-      ::Rails.application.assets.each_logical_path(::Rails.application.config.assets.precompile) do |lp|
-        puts lp
-        next if matches_filter(@exclude, lp)
-        next unless matches_filter(@allow, lp)
-        project_assets[lp] = ::ApplicationController.helpers.asset_path(lp)
+      project_assets = {}
+      assets_filters = ::Rails.application.config.assets.precompile
+      ::Rails.application.assets.each_file do |filename|
+        if logical_path = ::Rails.application.assets.send(:logical_path_for_filename, filename, assets_filters)
+          next if matches_filter(@exclude, logical_path, filename)
+          next unless matches_filter(@allow, logical_path, filename)
+          project_assets[logical_path] = ::ApplicationController.helpers.asset_path(logical_path)
+        end
       end
       return project_assets
     end
 
   protected
-
     # from 
     # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/base.rb:418
-    def matches_filter(filters, logical_path, filename)
+    def self.matches_filter(filters, logical_path, filename)
       return true if filters.empty?
 
       filters.any? do |filter|
@@ -30,6 +34,7 @@ module JsAssets
             filter.call(logical_path, filename.to_s)
           end
         else
+          # puts filter
           File.fnmatch(filter.to_s, logical_path)
         end
       end
