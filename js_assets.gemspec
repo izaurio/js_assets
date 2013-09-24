@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Zaur Abasmirzoev"]
   s.email       = ["zaur.kavkaz@gmail.com"]
   s.license     = 'MIT'
-  s.homepage    = "https://github.com/kavkaz"
+  s.homepage    = "https://github.com/kavkaz/js_assets"
   s.summary     = "Javascript helper"
   s.description = "Provide asset_path helper in javascript"
   s.require_paths = ["lib"]
