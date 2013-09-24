@@ -42,7 +42,7 @@ JsAssets::List.exclude << '*.png'
 ```
 Initially, the list is taken asset falling within the filter `app/config/environments/production.rb`
 ```ruby
-  config.assets.precompile += ['*.html']
+config.assets.precompile += ['*.html']
 ```
 By default:
 ```ruby
