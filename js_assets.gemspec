@@ -9,11 +9,12 @@ Gem::Specification.new do |s|
   s.version     = JsAssets::VERSION
   s.authors     = ["Zaur Abasmirzoev"]
   s.email       = ["zaur.kavkaz@gmail.com"]
-  s.homepage    = ""
+  s.license     = 'MIT'
+  s.homepage    = "https://github.com/kavkaz"
   s.summary     = "Javascript helper"
   s.description = "Provide asset_path helper in javascript"
-
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.require_paths = ["lib"]
+  s.files = `git ls-files`.split("\n")
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 4.0.0"
