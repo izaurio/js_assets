@@ -12,9 +12,9 @@ module JsAssets
         if logical_path = ::Rails.application.assets.send(:logical_path_for_filename, filename, assets_filters)
           next if matches_filter(@exclude, logical_path, filename)
           next unless matches_filter(@allow, logical_path, filename)
-          if ::Rails.env == 'development'
-            project_assets[logical_path] = ::ApplicationController.helpers.asset_path(logical_path)
-          elsif ::Rails.env == 'production'
+          if ::Rails.env.development? || ::Rails.env.test?
+            project_assets[logical_path] = '/assets/' + logical_path
+          elsif ::Rails.env.production?
             project_assets[logical_path] = '/assets/' + ::Rails.application.assets[logical_path].digest_path
           end
         end
