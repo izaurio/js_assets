@@ -52,6 +52,12 @@ JsAssets::List.allow = ["*.html"]
 
 Be careful! If the list of available `JsAssets::List.allow` get a file that is inserted directive `require app_assets`, recursion will occur as `sprockets` will calculate the md5-based content.
 
+To determine which file name will be used (with md5 or not) use the option:
+```ruby
+# Generate digests for assets URLs.
+config.assets.digest = true
+```
+
 # License #
 
 Copyright &copy; 2013 Zaur Abasmirzoev <<zaur.kavkaz@gmail.com>>
