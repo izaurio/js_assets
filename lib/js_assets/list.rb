@@ -13,10 +13,10 @@ module JsAssets
           next if matches_filter(@exclude, logical_path, filename)
           next unless matches_filter(@allow, logical_path, filename)
           if ::Rails.application.config.assets.digest
-            project_assets[logical_path] = File.join('/', Rails.application.config.assets.prefix,
-              Rails.application.assets[logical_path].digest_path)
+            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
+              ::Rails.application.assets[logical_path].digest_path)
           else
-            project_assets[logical_path] = File.join('/', Rails.application.config.assets.prefix,
+            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
               logical_path)
           end
         end
