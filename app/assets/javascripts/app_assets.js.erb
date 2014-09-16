@@ -1,11 +1,11 @@
 (function(){
-  assets = {
+  var assets = {
     files       : <%= JsAssets::List.to_json %>,
     asset_path  : function(path){
       return this.files[path];
     }
   }
 
-  window.asset_path       = assets.asset_path
-  window.asset_path.files = assets.files
+  window.asset_path       = function(){ assets.asset_path.apply(assets, arguments) }
+  window.asset_path.files = files
 })();
