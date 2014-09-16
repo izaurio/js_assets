@@ -24,26 +24,26 @@ module JsAssets
 
   protected
 
-    def file_allowed?(path, name)
+    def self.file_allowed?(path, name)
       return false if matches_filter(@exclude, path, name)
       return false if !matches_filter(@allow, path, name)
       return true
     end
 
-    def asset_path(path)
+    def self.asset_path(path)
       ActionController::Base.helpers.asset_path(path)
     end
 
     # will return logical path for the asset
-    def get_logical_path(file)
+    def self.get_logical_path(file)
       assets.send(:logical_path_for_filename, file, [])
     end
 
-    def config
+    def self.config
       ::Rails.application.config
     end
 
-    def assets
+    def self.assets
       ::Rails.application.assets
     end
 
