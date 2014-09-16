@@ -3,8 +3,9 @@ module JsAssets
     class << self
       attr_accessor :exclude, :allow
     end
-    @exclude  = ['application.js']
-    @allow    = ['*.html']
+    @exclude          = ['application.js']
+    @allow            = ['*.html']
+    @use_file_filter  = true
 
     def self.to_json
       fetch.to_json
@@ -35,7 +36,8 @@ module JsAssets
 
     # will return logical path for the asset
     def self.get_logical_path(file)
-      assets.send(:logical_path_for_filename, file, [])
+      filter = @use_file_filter ? config.assets.precompile : []
+      assets.send(:logical_path_for_filename, file, filter)
     end
 
     def self.config
