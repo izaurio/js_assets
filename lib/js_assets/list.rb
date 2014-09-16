@@ -21,7 +21,6 @@ module JsAssets
       end
     end
 
-
   protected
 
     def self.file_allowed?(path, name)
