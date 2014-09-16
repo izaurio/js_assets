@@ -1,7 +1,7 @@
 module JsAssets
   class List
     class << self
-      attr_accessor :exclude, :allow
+      attr_accessor :exclude, :allow, :use_file_filter
     end
     @exclude          = ['application.js']
     @allow            = ['*.html']
