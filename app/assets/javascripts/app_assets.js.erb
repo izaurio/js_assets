@@ -2,6 +2,7 @@
   var assets = {
     files       : <%= JsAssets::List.to_json %>,
     asset_path  : function(path){
+      console.log("Resolving file: " + path)
       return this.files[path];
     }
   }
