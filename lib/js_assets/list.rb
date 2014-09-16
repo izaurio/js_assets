@@ -11,9 +11,7 @@ module JsAssets
     end
 
     def self.fetch
-      assets  = {}
-      files   = ::Rails.application.assets
-      assets  = files.each_file.reduce({}) do |res, filename|
+      return assets.each_file.reduce({}) do |res, filename|
         if (logical_path = get_logical_path(filename))
           if file_allowed?(logical_path, filename)
             res[logical_path] = asset_path(logical_path)
@@ -21,15 +19,14 @@ module JsAssets
         end
         res
       end
-      return assets
     end
 
 
   protected
 
     def file_allowed?(path, name)
-      return false if matches_filter(@exclude, logical_path, filename)
-      return false if !matches_filter(@allow, logical_path, filename)
+      return false if matches_filter(@exclude, path, name)
+      return false if !matches_filter(@allow, path, name)
       return true
     end
 
@@ -39,8 +36,15 @@ module JsAssets
 
     # will return logical path for the asset
     def get_logical_path(file)
-      filter = ::Rails.application.config.assets.precompile
-      ::Rails.application.assets.send(:logical_path_for_filename, file, filter)
+      assets.send(:logical_path_for_filename, file, [])
+    end
+
+    def config
+      ::Rails.application.config
+    end
+
+    def assets
+      ::Rails.application.assets
     end
 
     # from 
