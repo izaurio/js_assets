@@ -1,5 +1,11 @@
-window.asset_path = function(logical_path){
-  return this.files[logical_path];
-}
+(function(){
+  assets = {
+    files       : <%= JsAssets::List.to_json %>,
+    asset_path  : function(path){
+      return this.files[path];
+    }
+  }
 
-asset_path.files = <%= JsAssets::List.to_json %>;
+  window.asset_path       = assets.asset_path
+  window.asset_path.files = assets.files
+})();
