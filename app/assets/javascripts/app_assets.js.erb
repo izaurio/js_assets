@@ -1,4 +1,5 @@
-window.project_assets = <%= JsAssets::List.fetch.to_json %>;
-window.asset_path = function(logical_path) {
-  return window.project_assets[logical_path];
-};
+window.asset_path = function(logical_path){
+  return this.files[logical_path];
+}
+
+asset_path.files = <%= JsAssets::List.to_json %>;

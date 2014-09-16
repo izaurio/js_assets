@@ -3,28 +3,46 @@ module JsAssets
     class << self
       attr_accessor :exclude, :allow
     end
-    @exclude = ['application.js']
-    @allow = ['*.html']
-    def self.fetch
-      project_assets = {}
-      assets_filters = ::Rails.application.config.assets.precompile
-      ::Rails.application.assets.each_file do |filename|
-        if logical_path = ::Rails.application.assets.send(:logical_path_for_filename, filename, assets_filters)
-          next if matches_filter(@exclude, logical_path, filename)
-          next unless matches_filter(@allow, logical_path, filename)
-          if ::Rails.application.config.assets.digest
-            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
-              ::Rails.application.assets[logical_path].digest_path)
-          else
-            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
-              logical_path)
-          end
-        end
-      end
-      return project_assets
+    @exclude  = ['application.js']
+    @allow    = ['*.html']
+
+    def self.to_json
+      fetch.to_json
     end
 
+    def self.fetch
+      assets  = {}
+      files   = ::Rails.application.assets
+      assets  = files.each_file.reduce({}) do |res, filename|
+        if (logical_path = get_logical_path(filename))
+          if file_allowed?(logical_path, filename)
+            res[logical_path] = asset_path(logical_path)
+          end
+        end
+        res
+      end
+      return assets
+    end
+
+
   protected
+
+    def file_allowed?(path, name)
+      return false if matches_filter(@exclude, logical_path, filename)
+      return false if !matches_filter(@allow, logical_path, filename)
+      return true
+    end
+
+    def asset_path(path)
+      ActionController::Base.helpers.asset_path(path)
+    end
+
+    # will return logical path for the asset
+    def get_logical_path(file)
+      filter = ::Rails.application.config.assets.precompile
+      ::Rails.application.assets.send(:logical_path_for_filename, file, filter)
+    end
+
     # from 
     # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/base.rb:418
     def self.matches_filter(filters, logical_path, filename)
