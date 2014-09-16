@@ -1,12 +1,9 @@
 (function(){
   var assets = {
     files       : <%= JsAssets::List.to_json %>,
-    asset_path  : function(path){
-      console.log("Resolving file: " + path + "from %O", this.files)
-      return this.files[path];
-    }
+    asset_path  : function(path){ return this.files[path]; }
   }
 
-  window.asset_path       = function(){ assets.asset_path.apply(assets, arguments) }
-  // window.asset_path.files = assets.files
+  window.asset_path       = function(){ return assets.asset_path.apply(assets, arguments) }
+  window.asset_path.files = assets.files
 })();
