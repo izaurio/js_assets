@@ -1,0 +1,1 @@
+JsAssets::List.allow << '*.png'

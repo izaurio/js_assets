@@ -3,3 +3,5 @@ log/*.log
 pkg/
 *.gem
 Gemfile.lock
+*.swp
+
