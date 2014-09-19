@@ -28,6 +28,25 @@ var path = asset_path('rubrics/views/index.html')
 // /assets/rubrics/views/index-5eb3bb250d5300736006c8944e436e3f.html
 ```
 
+To automatically update `app_assets.js` when adding new files in `app/assets`, do the following steps. Add to `Gemfile`:
+```ruby
+group :development do
+  gem 'guard'
+  gem 'guard-shell'
+end
+```
+ Add to `Guardfile`:
+```ruby
+guard :shell do
+    watch(%r{^app/assets/.*}) { `rm -rf tmp/cache` }
+end
+```
+Run the command `bundle exec` to install the gems. Before starting to develop run `guard`:
+```shell
+$ bundle exec guard
+```
+**Warning!** This may adversely affect the rate of return assets list in the development environment. Since they will be compiled at each change.
+
 ### Slim for AngularJS
 
 For example we want to use templating [Slim](http://rubydoc.info/gems/slim/) in [AngularJS](https://angularjs.org) app. Let our templates will be in `app/assets/webapp/`. We make the following settings:
