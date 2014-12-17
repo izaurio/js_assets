@@ -25,13 +25,16 @@ module JsAssets
   protected
 
     def self.file_allowed?(path, name)
-      return false if matches_filter(@exclude, path, name)
-      return false if !matches_filter(@allow, path, name)
-      return true
+      !matches_filter(@exclude, path, name) && matches_filter(@allow, path, name)
     end
 
     def self.asset_path(path)
-      ActionController::Base.helpers.asset_path(path)
+      if digest?
+        file_path = ::Rails.application.assets[path].digest_path
+      else
+        file_path = path
+      end
+      return File.join('/', config.assets.prefix, file_path)
     end
 
     # will return logical path for the asset
@@ -47,7 +50,11 @@ module JsAssets
     def self.assets
       ::Rails.application.assets
     end
-
+    
+    def self.digest?
+      config.assets.digest
+    end
+    
     # from 
     # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/base.rb:418
     def self.matches_filter(filters, logical_path, filename)
