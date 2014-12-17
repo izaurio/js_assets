@@ -1,30 +1,60 @@
 module JsAssets
   class List
     class << self
-      attr_accessor :exclude, :allow
+      attr_accessor :exclude, :allow, :use_file_filter
     end
-    @exclude = ['application.js']
-    @allow = ['*.html']
+    @exclude          = ['application.js']
+    @allow            = ['*.html']
+    @use_file_filter  = true
+
+    def self.to_json
+      fetch.to_json
+    end
+
     def self.fetch
-      project_assets = {}
-      assets_filters = ::Rails.application.config.assets.precompile
-      ::Rails.application.assets.each_file do |filename|
-        if logical_path = ::Rails.application.assets.send(:logical_path_for_filename, filename, assets_filters)
-          next if matches_filter(@exclude, logical_path, filename)
-          next unless matches_filter(@allow, logical_path, filename)
-          if ::Rails.application.config.assets.digest
-            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
-              ::Rails.application.assets[logical_path].digest_path)
-          else
-            project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
-              logical_path)
+      return assets.each_file.reduce({}) do |res, filename|
+        if (logical_path = get_logical_path(filename))
+          if file_allowed?(logical_path, filename)
+            res[logical_path] = asset_path(logical_path)
           end
         end
+        res
       end
-      return project_assets
     end
 
   protected
+
+    def self.file_allowed?(path, name)
+      !matches_filter(@exclude, path, name) && matches_filter(@allow, path, name)
+    end
+
+    def self.asset_path(path)
+      if digest?
+        file_path = ::Rails.application.assets[path].digest_path
+      else
+        file_path = path
+      end
+      return File.join('/', config.assets.prefix, file_path)
+    end
+
+    # will return logical path for the asset
+    def self.get_logical_path(file)
+      filter = @use_file_filter ? config.assets.precompile : []
+      assets.send(:logical_path_for_filename, file, filter)
+    end
+
+    def self.config
+      ::Rails.application.config
+    end
+
+    def self.assets
+      ::Rails.application.assets
+    end
+    
+    def self.digest?
+      config.assets.digest
+    end
+    
     # from 
     # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/base.rb:418
     def self.matches_filter(filters, logical_path, filename)
