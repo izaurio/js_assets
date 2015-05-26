@@ -1,0 +1,14 @@
+<h1>Assets</h1>
+
+<ul id="assets"></ul>
+
+<script>
+  (function(){
+   var assetList = document.getElementById("assets");
+   Object.keys(project_assets).forEach(function(key){
+     var asset = document.createElement("li");
+     asset.appendChild(document.createTextNode(key+": "+project_assets[key]));
+     assetList.appendChild(asset);
+   });
+  })();
+</script>
