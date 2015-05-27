@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'rails'
-  s.add_dependency 'sprockets', '~> 2.0'
+  s.add_dependency 'sprockets', '>= 3.0'
 
   s.add_development_dependency "yard"
 end
