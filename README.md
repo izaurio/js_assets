@@ -10,7 +10,10 @@ gem 'js_assets'
 ```
 And run `bundle install`.
 
-The current version supports only `Sprockets 3.x`.
+The current version supports only `Sprockets 3.x`. For `Sprockets 2.x` use version `0.0.10`
+```ruby
+gem 'js_assets', '<= 0.0.10'
+```
 
 ## Usage
 
