@@ -7,12 +7,13 @@ module JsAssets
     @allow = ['*.html']
     def self.fetch
       project_assets = {}
-      ::Rails.application.assets.logical_paths do |logical_path, filename|
+      env = Sprockets::Railtie.build_environment(::Rails.application)
+      env.logical_paths do |logical_path, filename|
         next if matches_filter(@exclude, logical_path, filename)
         next unless matches_filter(@allow, logical_path, filename)
-        if ::Rails.application.assets.file_digest(filename)
+        if env.file_digest(filename)
           project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
-            ::Rails.application.assets[logical_path].digest_path)
+            env[logical_path].digest_path)
         else
           project_assets[logical_path] = File.join('/', ::Rails.application.config.assets.prefix,
             logical_path)
