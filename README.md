@@ -110,6 +110,11 @@ To determine which file name will be used (with md5 or not) use the option:
 config.assets.digest = true
 ```
 
+You can use the directive Rails `asset_host` by setting `ActionController::Base.asset_host` in the application configuration, typically in `config/environments/production.rb`:
+```ruby
+config.action_controller.asset_host = "assets.example.com"
+```
+
 # License #
 
 Copyright &copy; 2013 Zaur Abasmirzoev <<zaur.kavkaz@gmail.com>>
