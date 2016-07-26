@@ -33,7 +33,15 @@ var path = asset_path('rubrics/views/index.html')
 // /assets/rubrics/views/index-5eb3bb250d5300736006c8944e436e3f.html
 ```
 
-To automatically update `app_assets.js` when adding new files in `app/assets`, do the following steps. Add to `Gemfile`:
+You can look at the raw hash of assets by inspecting `JsAssets::List.fetch` on the Rails console or the global JavaScript variable, `project_assets`, in your browser's console.
+
+## Updating after changes
+
+js_assets would be pretty slow if it had to calculate the assets on every request! For performance reasons, js_assets therefore keeps a cache of assets and *the cache will survive app restarts*, even if you restart Spring during development. If you change js_assets' configuration or add/remove any asset files, you should delete `tmp/cache` under Rails root.
+
+To automatically update `app_assets.js` when adding new files in `app/assets`, you can use the `guard` tool - it monitors the file system and performs actions when certain events occur. This can be useful during development.
+
+To setup Guard, Add to `Gemfile`:
 ```ruby
 group :development do
   gem 'guard'
@@ -52,9 +60,12 @@ $ bundle exec guard
 ```
 **Warning!** This may adversely affect the rate of return assets list in the development environment. Since they will be compiled at each change.
 
-### Slim for AngularJS
+### Example: Reference Slim-generated HTML assets from JavaScript
 
 For example we want to use templating [Slim](http://rubydoc.info/gems/slim/) in [AngularJS](https://angularjs.org) app. Let our templates will be in `app/assets/webapp/`. We make the following settings:
+
+In general, the standard config to generate HTML from Slim would look something like this:
+
 ```ruby
 # config/application.rb
 config.assets.paths << Rails.root.join('app', 'assets', 'webapp')
@@ -66,12 +77,13 @@ Rails.application.assets.register_engine('.slim', Slim::Template)
 config.assets.precompile += ['*.html']
 ```
 
-Do not forget to connect a file in your `application.js`
+By default, js_assets will make all "*.html" assets available, so we don't have to do any special js_assets config. To reference these templates in JavaScript, just include app_assets in `application.js`.
 ```javascript
 //= require app_assets
 ```
 
-Now for the template `app/assets/webapp/blogs/edit.html.slim` we can get a path depending on the environment:
+And now we get a path for these Slim-generated assets in our JavaScript! e.g. to reference the template `app/assets/webapp/blogs/edit.html.slim`:
+
 ```javascript
 var path = asset_path('blogs/edit.html')
 // the function will return for development:
@@ -80,11 +92,15 @@ var path = asset_path('blogs/edit.html')
 // /assets/blogs/edit-5eb3bb250d5300736006c8944e436e3f.html
 ```
 
+The `asset_path` function will be available to any JavaScript, including those you've generated from other syntaxes such as CoffeeScript.
+
 ## Settings
 
-You can specify, for example in the initializer, which will be available in the helper `asset_path`, and which should be excluded.
+Using `JSAssets::List`, you can specify, for example in the initializer, which assets will be available via the `asset_path` helper, and which should be excluded. By default, "*.html" is included.
 
-To add a file to the list, use:
+You can configure this in application.rb or create an initialiser file like config/intializers/js_assets.rb and configure it there.
+
+To add a file pattern to the list, use:
 ```ruby
 JsAssets::List.allow << '*.png'
 ```
@@ -96,15 +112,17 @@ Initially, the list is taken asset falling within the filter `app/config/environ
 ```ruby
 config.assets.precompile += ['*.html']
 ```
-By default:
+The default settings are:
 ```ruby
 JsAssets::List.exclude = ["application.js"]
 JsAssets::List.allow = ["*.html"]
 ```
 
-Be careful! If the list of available `JsAssets::List.allow` get a file that is inserted directive `require app_assets`, recursion will occur as `sprockets` will calculate the md5-based content.
+And remember to delete tmp/cache.
 
-To determine which file name will be used (with md5 or not) use the option:
+Be careful! If the list of available `JsAssets::List.allow` get a file that is inserted directive `require app_assets`, recursion will occur as `sprockets` will calculate the md5-based content. Generally, if you are using files like "application.js" with a list of "require" directives, you should exclude them using the `.exclude` setting above.
+
+To determine if filename will be used with md5 hashes, js_assets will use the Rails config:
 ```ruby
 # Generate digests for assets URLs.
 config.assets.digest = true
